@@ -1,7 +1,7 @@
-Java Launcher: /Users/vsenger/.sdkman/candidates/java/17.0.3.6.1-amzn/bin/java
-Arguments: '--inJar, /Users/vsenger/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.19.2-43.1.1/forge-1.19.2-43.1.1-injected.jar, --outJar, /Users/vsenger/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.19.2-43.1.1_mapped_official_1.19.2/forge-1.19.2-43.1.1_mapped_official_1.19.2.jar, --logFile, accesstransform.log, --atFile, /Users/vsenger/Downloads/mdk/build/_atJar_4/parent_at.cfg'
+Java Launcher: /home/vsenger/.sdkman/candidates/java/17.0.4-amzn/bin/java
+Arguments: '--inJar, /home/vsenger/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.19.2-43.1.1/forge-1.19.2-43.1.1-injected.jar, --outJar, /home/vsenger/.gradle/caches/forge_gradle/minecraft_user_repo/net/minecraftforge/forge/1.19.2-43.1.1_mapped_official_1.19.2/forge-1.19.2-43.1.1_mapped_official_1.19.2.jar, --logFile, accesstransform.log, --atFile, /home/vsenger/code/minecraft-v2/build/_atJar_4/parent_at.cfg'
 Classpath:
- - /Users/vsenger/.gradle/caches/forge_gradle/maven_downloader/net/minecraftforge/accesstransformers/8.0.7/accesstransformers-8.0.7-fatjar.jar
-Working directory: /Users/vsenger/Downloads/mdk/build/_atJar_4
+ - /home/vsenger/.gradle/caches/forge_gradle/maven_downloader/net/minecraftforge/accesstransformers/8.0.7/accesstransformers-8.0.7-fatjar.jar
+Working directory: /home/vsenger/code/minecraft-v2/build/_atJar_4
 Main class: net.minecraftforge.accesstransformer.TransformerProcessor
 ====================================

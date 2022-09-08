@@ -6,11 +6,17 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.material.Material;
+
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.level.BlockEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.InterModComms;
@@ -42,12 +48,14 @@ public class ExampleMod
 
     public static final String AWS_IOT_ENDPOINT = "a2p4fyajwx9lux-ats.iot.us-east-1.amazonaws.com";
     public static final String AWS_IOT_CLIENT_ID = "jump-mod";
-    public static final String AWS_IOT_CERTIFICATE_FILE = "/Users/vsenger/code/minecraft-iot/9e3f90d7ca2074eb8ba38b1caf619d06d5d2c150f294a59cdb0ee5a615131090-certificate.pem.crt";
-    public static final String AWS_IOT_PRIVATE_KEY_FILE = "/Users/vsenger//code/minecraft-iot/9e3f90d7ca2074eb8ba38b1caf619d06d5d2c150f294a59cdb0ee5a615131090-private.pem.key";
+    public static final String AWS_IOT_CERTIFICATE_FILE = "/home/vsenger/minecraft-iot/8f2b2f776911332a0fea819064421830e592b55f32c4a6262918700841fc5c32-certificate.pem.crt";
+    public static final String AWS_IOT_PRIVATE_KEY_FILE = "/home/vsenger/minecraft-iot/8f2b2f776911332a0fea819064421830e592b55f32c4a6262918700841fc5c32-private.pem.key";
 
     private static final String AWS_IOT_INBOUND_TOPIC = "playground/sensors";
     private static final AWSIotQos AWS_IOT_INBOUND_TOPIC_QOS = AWSIotQos.QOS0;
+    private static final String AWS_IOT_SENSORS = "playground/sensors";
 
+    private static final String AWS_IOT_SOUND = "playground/sound";
     // Define mod id in a common place for everything to reference
     public static final String MODID = "examplemod";
     // Directly reference a slf4j logger
@@ -76,6 +84,8 @@ public class ExampleMod
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+        MinecraftForge.EVENT_BUS.register(new RainWater());
+
     }
 
     private void commonSetup(final FMLCommonSetupEvent event)
@@ -96,8 +106,12 @@ public class ExampleMod
             MinecraftServer currentServer = ServerLifecycleHooks.getCurrentServer();
             //currentServer.getWo
             // https://github.com/aws/aws-iot-device-sdk-java/tree/master/aws-iot-device-sdk-java-samples/src/main/java/com/amazonaws/services/iot/client/sample/pubSub
-            AWSIotTopic topic = new TopicListener(AWS_IOT_INBOUND_TOPIC, AWS_IOT_INBOUND_TOPIC_QOS, currentServer);
-            client.subscribe(topic, true);
+
+            AWSIotTopic sensorsListener = new SensorsListener(AWS_IOT_SENSORS, AWS_IOT_INBOUND_TOPIC_QOS, currentServer);
+            AWSIotTopic soundListener = new SoundListener(AWS_IOT_SOUND, AWS_IOT_INBOUND_TOPIC_QOS, currentServer);
+            client.subscribe(sensorsListener, true);
+            client.subscribe(soundListener, true);
+
         } catch (Exception e) {
             LOGGER.error("Error connecting to IoT", e);
         }
@@ -127,4 +141,28 @@ public class ExampleMod
             LOGGER.info("MINECRAFT NAME >> {}", Minecraft.getInstance().getUser().getName());
         }
     }
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onBlockBreak(BlockEvent.BreakEvent event) {
+        if(event.getPlayer() == null) return;
+
+        ItemStack usedItem = event.getPlayer().getItemInHand(event.getPlayer().getUsedItemHand());
+        if(usedItem == null) return;
+
+    }
+    int lamp =0;
+    @SubscribeEvent
+    public void blockBreak(BlockEvent.BreakEvent event) {
+        LOGGER.info("Block break");
+
+        try {
+            //client.publish(ExampleMod.AWS_IOT_TOPIC, "{ \"msg\": \"direto do minecraft\", \"action\": \"block-break\"}");
+            client.publish(ExampleMod.AWS_IOT_TOPIC, "" + lamp);
+            LOGGER.info("Turning " + (lamp == 0 ? "off" : "on") + " lamp");
+
+            lamp = lamp==0 ? 1 : 0;
+        } catch (Exception e) {
+            LOGGER.error("Error publishing event to IoT", e);
+        }
+    }
+
 }
