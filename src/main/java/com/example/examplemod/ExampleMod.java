@@ -43,7 +43,8 @@ public class ExampleMod
 {
     AWSIotMqttClient client = null;
 
-    public static final String AWS_IOT_TOPIC = "control/lamp";
+    public static final String AWS_IOT_TOPIC1 = "playground/relay";
+    public static final String AWS_IOT_TOPIC2 = "playground2/relay";
     // public static final String AWS_IOT_ENDPOINT = "<prefix>-ats.iot.<region>.amazonaws.com";
 
     public static final String AWS_IOT_ENDPOINT = "a2p4fyajwx9lux-ats.iot.us-east-1.amazonaws.com";
@@ -149,17 +150,17 @@ public class ExampleMod
         if(usedItem == null) return;
 
     }
-    int lamp =0;
+    int lamp =0, lamp_state=0;
     @SubscribeEvent
     public void blockBreak(BlockEvent.BreakEvent event) {
         LOGGER.info("Block break");
 
         try {
-            //client.publish(ExampleMod.AWS_IOT_TOPIC, "{ \"msg\": \"direto do minecraft\", \"action\": \"block-break\"}");
-            client.publish(ExampleMod.AWS_IOT_TOPIC, "" + lamp);
-            LOGGER.info("Turning " + (lamp == 0 ? "off" : "on") + " lamp");
+            lamp_state = lamp_state == 0 ? 1 : 0;
+            client.publish(ExampleMod.AWS_IOT_TOPIC1 , "" + lamp_state);
 
-            lamp = lamp==0 ? 1 : 0;
+            //client.publish(lamp==0 ? ExampleMod.AWS_IOT_TOPIC1 : ExampleMod.AWS_IOT_TOPIC2, "" + lamp_state);
+            //if(lamp_state==0) lamp = lamp == 0 ? 1 : 0;
         } catch (Exception e) {
             LOGGER.error("Error publishing event to IoT", e);
         }
